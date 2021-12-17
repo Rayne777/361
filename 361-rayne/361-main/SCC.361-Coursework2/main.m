@@ -24,10 +24,12 @@ for i = 1:population_size
     temp_chromosome((index*3)+1) = randi([1,4]);
     temp_chromosome((index*3)+2) = randi([0,9]);
     temp_chromosome((index*3)+3) = randi([0,9]);
+    
     population(i,:) = temp_chromosome;
 end
 %% always have an extra column at end
 population = [population zeros(population_size,1)];
+fitness_data =zeros(iter,1);
 
 %%repeat iter times; each time generates a new population
 for k = 1:iter
@@ -38,12 +40,10 @@ for k = 1:iter
     end  
     
     %% elite, keep best 2
-    
     population = sortrows(population,31);
     population_new = zeros(population_size,30);
     population_new(1:2,:) = population(population_size-1:population_size,1:30);
     population_new_num = 2;
-    fitness_data =zeros(iter,1);
     fitness_data(k,1)=population(population_size,31);
     
     
