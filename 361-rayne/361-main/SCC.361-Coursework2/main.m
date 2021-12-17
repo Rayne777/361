@@ -1,15 +1,17 @@
-
-iter = 1000;% Number of iterations: repeat "iter" times 
+clear;
+close all;
+iter = 10000;% Number of iterations: repeat "iter" times 
 population_size = 20; % Number of chromosomes in population
-prompt = "Do you want to use defalut algorthim(enter1) or you want to choose(enter2)";
+prompt = "Do you want to use defalut algorthim ,plz enter1 ""or you want to choose the algorthims, plz enter2 ";
 choice = input(prompt);
 if choice ==1
-    prompt_info="The default algorthim will be RouletteWheel(Selection),";
+    prompt_info="The default algorthim will be RouletteWheel(Selection)";
+
     x1=1;
     x2=1;
     x3=1;
 else
-    prompt1 = "Please enter which selection algorithm you would like:1.TournamentSelection;2.StochasticUniversal;3.RouletteWheel ";
+    prompt1 = "Please enter which selection algorithm you would like:1.Tournament Selection;2.Truncation Selection;3.RouletteWheel Selection ";
     x1 = input(prompt1);
     prompt2 = "Please enter which Crossover algorithm you would like:1.Single Point Crossover;2.Two-Point Crossover ;3.Uniform Crossover ";
     x2 = input(prompt2);
@@ -24,18 +26,17 @@ for i = 1:population_size
     temp_chromosome((index*3)+1) = randi([1,4]);
     temp_chromosome((index*3)+2) = randi([0,9]);
     temp_chromosome((index*3)+3) = randi([0,9]);
-    
     population(i,:) = temp_chromosome;
 end
 %% always have an extra column at end
 population = [population zeros(population_size,1)];
 fitness_data =zeros(iter,1);
-
+file = dlmread('muir_world.txt',' ');
 %%repeat iter times; each time generates a new population
 for k = 1:iter
     %% evaluate fitness scores
     for i = 1:population_size
-        [fitness, trail] = simulate_ant(dlmread('muir_world.txt',' '), population(i,:)); 
+        [fitness, trail] = simulate_ant(file, population(i,:)); 
         population(i,31)=fitness;
     end  
     
@@ -46,16 +47,17 @@ for k = 1:iter
     population_new_num = 2;
     fitness_data(k,1)=population(population_size,31);
     
-    
     while(population_new_num < population_size)  
         if x1 == 1
             %% repeat until new population is full
             %% use a selection method and pick two chromosomes
+            %TournamentSelection algorithm
                 choice1 = TournamentSelection(population(:,31));
                 choice2 = TournamentSelection(population(:,31));
                 temp_chromosome_1 = population(choice1, 1:30);
                 temp_chromosome_2 = population(choice2, 1:30);
         elseif x1 == 2
+             %TruncationSelection algorithm
                 temp_chromosome_1 = population_new(1, 1:30);
                 temp_chromosome_2 = population_new(2, 1:30);
 
@@ -106,19 +108,26 @@ for k = 1:iter
 
             %% mutation prob 0.2 and random pick bit to switch
             if (rand < 0.2)
+                
                 if x3==1
+                    index=0:9;
+                    while (any(temp_chromosome_2(index*3+1)>4) ||(temp_chromosome_2(index*3+1)<1))
                     temp_chromosome_1 = InversionMutation(temp_chromosome_1);
                     temp_chromosome_2 = InversionMutation(temp_chromosome_1);
+                    end
 
                 elseif x3==2
-                    temp_chromosome_1 = SwapMutation(temp_chromosome_1);
+                    index=0:9;
+                    while(any(temp_chromosome_2(index*3+1)>4) ||(temp_chromosome_2(index*3+1)<1))                   
+                        temp_chromosome_1 = SwapMutation(temp_chromosome_1);
                     temp_chromosome_2 = SwapMutation(temp_chromosome_1);
-
+                    end
                 else
-                    temp_chromosome_1 = ScrambleMutation(temp_chromosome_1);
+                    index=0:9;
+                    while(any(temp_chromosome_2(index*3+1)>4) ||(temp_chromosome_2(index*3+1)<1))                    
+                        temp_chromosome_1 = ScrambleMutation(temp_chromosome_1);
                     temp_chromosome_2 = ScrambleMutation(temp_chromosome_1);
-
-
+                    end
                 end
             end
 
